@@ -38,42 +38,49 @@ Init:
         ld hl,ship1
         ld bc,ship1_patt_end - ship1
         ldir
+        
+	ld de,ship2_ram
+        ld hl,ship2
+        ld bc,ship2_patt_end - ship2
+        ldir
 	
 	ld de, ship1
-;	call Form_ship
-	call Print_ship    
-	call Print_ship    
-	call Print_ship    
-	call Print_ship    
-	call Print_ship    
-        call Print_ship    
-	call Print_ship    
-	call Print_ship    
-	call Print_ship    
+	call Form_ship
+
+	ld b,9
+Put_ship1:
+        ld hl,ship1_ram
+	call Print_ship
+        djnz Put_ship1
+  
         ld a,13
         call CHPUT
         ld a,10
         call CHPUT
         call CHPUT
-	call Print_ship    
-	call Print_ship    
-	call Print_ship    
-	call Print_ship    
-	call Print_ship    
-        call Print_ship    
-	call Print_ship    
-	call Print_ship    
-	call Print_ship    
+        ld b,9
+Put_ship2:
+        ld hl,ship2_ram
+	call Print_ship
+        djnz Put_ship2
+
         
 
         
 Loop:
-	call Scroll_ship_right
-	call Scroll_ship_right
-	call Scroll_ship_right
+	ld hl,ship1_pattcol1_ram
+        ld ix,ship1_pattcol2_ram
+        ld iy,ship1_pattcol3_ram
 	call Scroll_ship_right
 
- ;       call Form_ship
+	ld hl,ship2_pattcol1_ram
+        ld ix,ship2_pattcol2_ram
+        ld iy,ship2_pattcol3_ram
+	call Scroll_ship_left
+
+
+
+        call Form_ship
         ld bc,0
 
 pause:	
@@ -85,6 +92,13 @@ Form_ship:		; Programs the char patterns
 			; for the ship pieces
         ld ix,ship1
         ld iy,ship1_patt_ram
+        call Form_ship_char_loop
+        ld ix,ship2
+        ld iy,ship2_patt_ram
+        call Form_ship_char_loop
+        ret
+
+        
 Form_ship_char_loop:
         ld a,(ix)	; char to reprogram
         or a
@@ -114,7 +128,7 @@ Form_ship_pattern_char_write:
 
 Print_ship: 		; Put the chars on screen
 			; Corresponding to the ship's pattern
-	ld hl,ship1_ram
+
 Print_ship_loop1:
         ld a,(hl)
         or a
@@ -128,17 +142,14 @@ Scroll_ship_right:	; Moves the ship's pattern 1
 			; pixel to the right
                         ; dumb concept for now
                         
-	ld hl,ship1_pattcol1_ram
-        ld ix,ship1_pattcol2_ram
-        ld iy,ship1_pattcol3_ram
         ld a,8
 Scroll_ship_right_loop:
 	scf
 	bit 0,(iy)
-        jr nz,is_not_zero
-is_zero:
+        jr nz, Scroll_ship_right_is_not_zero
+Scroll_ship_right_is_zero:
 	ccf
-is_not_zero:
+Scroll_ship_right_is_not_zero:
         rr (hl)
         rr (ix)
         rr (iy)
@@ -149,6 +160,27 @@ is_not_zero:
         jr nz,Scroll_ship_right_loop
 	ret
 
+Scroll_ship_left:	; Moves the ship's pattern 1 
+			; pixel to the left
+                        ; dumb concept for now
+                        
+        ld a,8
+Scroll_ship_left_loop:
+	scf
+	bit 7,(hl)
+        jr nz, Scroll_ship_left_is_not_zero
+Scroll_ship_left_is_zero:
+	ccf
+Scroll_ship_left_is_not_zero:
+        rl (iy)
+        rl (ix)
+        rl (hl)
+        inc hl
+        inc ix
+        inc iy
+        dec a
+        jr nz,Scroll_ship_left_loop
+	ret
             
 ; Ship's shape in 6x3 chars
 ship1:  defm "ABC",0
@@ -189,11 +221,58 @@ ship1_pattcol3:
         
 ship1_patt_end:
 
+
+; Ship's shape in 6x3 chars
+ship2:  defm "abc",0
+        
+ship2_patt:
+ship2_pattcol1: 
+
+	db 0x00			; 00000000
+	db 0x07			; 00000111
+	db 0x0f			; 00001111
+	db 0x0c			; 00001100
+	db 0x0c			; 00001100
+	db 0x0f			; 00001111
+        db 0x07			; 00000111
+	db 0x00			; 00000000
+
+ship2_pattcol2: 
+
+	db 0x00			; 00000000
+	db 0xff			; 11111111
+	db 0xff			; 11111111
+	db 0x00			; 00000000
+	db 0x00			; 00000000
+	db 0xff			; 11111111
+	db 0xff			; 11111111
+	db 0x00			; 00000000
+
+ship2_pattcol3: 
+
+	db 0x00			; 00000000
+	db 0xe0			; 11100000
+	db 0xf0			; 11110000
+	db 0x30			; 00110000
+	db 0x30			; 00110000
+	db 0xf0			; 11110000
+	db 0xe0			; 11100000
+	db 0x00			; 00000000
+        
+ship2_patt_end:
+
+
 	; The ship has to be moved to RAM to be manipulated.
         ; These are the RAM addresses.
         
 ship1_ram: equ 0x8000
-ship1_patt_ram: equ 0x8004
+ship1_patt_ram: equ ship1_ram + 4
 ship1_pattcol1_ram: equ ship1_patt_ram
 ship1_pattcol2_ram: equ ship1_pattcol1_ram + 8
 ship1_pattcol3_ram: equ ship1_pattcol2_ram + 8
+
+ship2_ram: equ ship1_pattcol3_ram + 8
+ship2_patt_ram: equ ship2_ram + 4
+ship2_pattcol1_ram: equ ship2_patt_ram
+ship2_pattcol2_ram: equ ship2_pattcol1_ram + 8
+ship2_pattcol3_ram: equ ship2_pattcol2_ram + 8
