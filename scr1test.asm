@@ -85,7 +85,6 @@ Loop:
 
 
         call Form_ship
-        ld bc,0
 
 pause:	
 	halt        
