@@ -1,5 +1,12 @@
 
 ; Test for Screen 1 - repeated patterns handling
+; Done: the ship "record" includes which chars it uses
+; ToDo:
+;	make the ship record NxN flexible
+;	make the ship printing NxN flexible
+;	make the char reprogramming NxN flexible
+;	make scrolling routines NxN flexible
+
 
 	org 0x4000
        
@@ -81,8 +88,6 @@ Loop:
         ld ix,ship2_pattcol2_ram
         ld iy,ship2_pattcol3_ram
 	call Scroll_ship_left
-
-
 
         call Form_ship
 
