@@ -72,7 +72,11 @@ Loop:
         ld ix,ship1_pattcol2_ram
         ld iy,ship1_pattcol3_ram
 	call Scroll_ship_right
-
+	ld hl,ship1_pattcol1_ram
+        ld ix,ship1_pattcol2_ram
+        ld iy,ship1_pattcol3_ram
+	call Scroll_ship_right
+        
 	ld hl,ship2_pattcol1_ram
         ld ix,ship2_pattcol2_ram
         ld iy,ship2_pattcol3_ram
@@ -231,8 +235,8 @@ ship2_pattcol1:
 	db 0x00			; 00000000
 	db 0x07			; 00000111
 	db 0x0f			; 00001111
-	db 0x0c			; 00001100
-	db 0x0c			; 00001100
+	db 0x19			; 00011001
+	db 0x18			; 00011000
 	db 0x0f			; 00001111
         db 0x07			; 00000111
 	db 0x00			; 00000000
@@ -242,8 +246,8 @@ ship2_pattcol2:
 	db 0x00			; 00000000
 	db 0xff			; 11111111
 	db 0xff			; 11111111
-	db 0x00			; 00000000
-	db 0x00			; 00000000
+	db 0x9b			; 10011011
+	db 0xcd			; 11001101
 	db 0xff			; 11111111
 	db 0xff			; 11111111
 	db 0x00			; 00000000
@@ -253,8 +257,8 @@ ship2_pattcol3:
 	db 0x00			; 00000000
 	db 0xe0			; 11100000
 	db 0xf0			; 11110000
-	db 0x30			; 00110000
-	db 0x30			; 00110000
+	db 0x18			; 00011000
+	db 0x98			; 10011000
 	db 0xf0			; 11110000
 	db 0xe0			; 11100000
 	db 0x00			; 00000000
